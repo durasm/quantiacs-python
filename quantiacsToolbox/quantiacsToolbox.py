@@ -257,10 +257,10 @@ def runts(tradingSystem, plotEquity=True, reloadData=False, state={}, sourceData
 
     dataToLoad.update(tsDataToLoad)
 
-    global settingsCache
-    global dataCache
 
-    if 'settingsCache' not in globals() or settingsCache != settings:
+    global dataCache
+    
+    if 'dataCache' not in globals():
         if 'beginInSample' in settings and 'endInSample' in settings:
             dataDict=loadData(settings['markets'],dataToLoad,reloadData, beginInSample = settings['beginInSample'], endInSample = settings['endInSample'], dataDir=sourceData)
         elif 'beginInSample' in settings and 'endInSample' not in settings:
@@ -271,11 +271,9 @@ def runts(tradingSystem, plotEquity=True, reloadData=False, state={}, sourceData
             dataDict=loadData(settings['markets'],dataToLoad,reloadData, dataDir=sourceData)
 
         dataCache=deepcopy(dataDict)
-        settingsCache = deepcopy(settings)
 
     else:
         print 'copying data from cache'
-        settings= deepcopy(settingsCache)
         dataDict = deepcopy(dataCache)
 
     print 'Evaluating Trading System'
