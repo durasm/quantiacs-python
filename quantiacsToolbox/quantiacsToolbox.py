@@ -13,6 +13,7 @@ import os.path
 import sys
 import ssl
 from copy import deepcopy
+from tqdm import tqdm
 
 import pandas as pd
 import numpy as np
@@ -303,9 +304,8 @@ def runts(tradingSystem, plotEquity=True, reloadData=False, state={}, sourceData
 
     dataToLoad.update(tsDataToLoad)
 
-
     global dataCache
-    
+
     if 'dataCache' not in globals():
         if 'beginInSample' in settings and 'endInSample' in settings:
             dataDict=loadData(settings['markets'],dataToLoad,reloadData, beginInSample = settings['beginInSample'], endInSample = settings['endInSample'], dataDir=sourceData)
@@ -377,7 +377,7 @@ def runts(tradingSystem, plotEquity=True, reloadData=False, state={}, sourceData
     t0= time.time()
 
     # Loop through trading days
-    for t in range(startLoop,endLoop):
+    for t in tqdm(range(startLoop,endLoop)):
         todaysP= dataDict['exposure'][t-1,:]
         yesterdaysP = realizedP[t-2,:]
         deltaP=todaysP-yesterdaysP
@@ -430,8 +430,8 @@ def runts(tradingSystem, plotEquity=True, reloadData=False, state={}, sourceData
 
         t1=time.time()
         runtime = t1-t0
-        if runtime > 300 and state['runtimeInterrupt']:
-            errorlog.append('Evaluation stopped: Runtime exceeds 5 minutes.')
+        if runtime > 600 and state['runtimeInterrupt']:
+            errorlog.append('Evaluation stopped: Runtime exceeds 10 minutes.')
             break
 
     if 'budget' in settings:
